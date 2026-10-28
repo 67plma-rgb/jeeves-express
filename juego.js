@@ -343,7 +343,7 @@
 
   /* ---------- entrada ---------- */
   var ptr = null, keys = { l: 0, r: 0 }, startX = 0, startT = 0;
-  function ignoreTarget(t) { return t.closest && t.closest('.turbo,.ico,.scr,.back,.rbar,.r-intro,.r-top'); }
+  function ignoreTarget(t) { return t.closest && t.closest('.joy,.turbo,.ico,.scr,.back,.rbar,.r-intro,.r-top'); }
   game.addEventListener('pointerdown', function (e) {
     if (ST.mode === 'resto' && !ignoreTarget(e.target)) { restoTap(e); return; }
     if (ignoreTarget(e.target) || (ST.mode !== 'race' && ST.mode !== 'count')) return;
@@ -361,6 +361,16 @@
     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.l = 0; if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.r = 0;
     if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'Shift') ST.boost = false;
   });
+  /* joystick: deslizar a los lados */
+  var joy = $('#joy'), knob = joy.querySelector('.knob'), joyId = null, joyX = 0;
+  function joyMove(e) {
+    var r = joy.getBoundingClientRect(), max = r.width / 2 - 30, dx = clamp(e.clientX - (r.left + r.width / 2), -max, max);
+    joyX = Math.abs(dx / max) < .1 ? 0 : dx / max; knob.style.transform = 'translateX(' + dx.toFixed(1) + 'px)'; joy.setAttribute('aria-valuenow', joyX.toFixed(2));
+  }
+  function joyEnd() { joyId = null; joyX = 0; knob.style.transform = ''; joy.classList.remove('on'); joy.setAttribute('aria-valuenow', '0'); }
+  joy.addEventListener('pointerdown', function (e) { joyId = e.pointerId; joy.classList.add('on'); try { joy.setPointerCapture(e.pointerId); } catch (x) {} joyMove(e); e.preventDefault(); });
+  joy.addEventListener('pointermove', function (e) { if (e.pointerId === joyId) joyMove(e); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { joy.addEventListener(n, function (e) { if (e.pointerId === joyId) joyEnd(); }); });
   var turboBtn = $('#turbo');
   turboBtn.addEventListener('pointerdown', function (e) { ST.boost = true; turboBtn.classList.add('hold'); try { turboBtn.setPointerCapture(e.pointerId); } catch (x) {} e.preventDefault(); });
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { turboBtn.addEventListener(n, function () { ST.boost = false; turboBtn.classList.remove('hold'); }); });
@@ -385,7 +395,7 @@
   function paintLives() { var s = elLives.children; for (var i = 0; i < 3; i++) s[i].setAttribute('class', i < 3 - ST.hits ? 'on' : ''); }
 
   function startRace() {
-    audioInit(); myName(); resetRace(false); R = null; elResto.hidden = true; lofi(false); ST.mode = 'count'; ST.count = 3.3; ST.lastCount = 9;
+    audioInit(); myName(); joyEnd(); resetRace(false); R = null; elResto.hidden = true; lofi(false); ST.mode = 'count'; ST.count = 3.3; ST.lastCount = 9;
     $('#scrStart').hidden = true; $('#scrEnd').hidden = true; $('#hud').hidden = false; paintLives(); elHint.classList.remove('off'); elClock.textContent = '0:00.0';
     if (musicG && AC) musicG.gain.setTargetAtTime(.22, AC.currentTime, .4);
   }
@@ -442,6 +452,7 @@
     if (ST.speed < cap) ST.speed = Math.min(cap, ST.speed + MAXS * (ST.boost ? .9 : .55) * dt); else ST.speed = Math.max(cap, ST.speed - MAXS * (ST.finished ? .5 : .9) * dt);
     ST.pos += ST.speed * dt;
     if (keys.l || keys.r) ST.tx = clamp(ST.tx + (keys.r - keys.l) * 2.6 * dt, -1.25, 1.25);
+    if (joyX && !ST.finished) { ST.tx = clamp(ST.tx + joyX * 2.7 * dt, -1.25, 1.25); if (Math.abs(ST.tx - ST.x) > .35) ST.tx = ST.x + Math.sign(ST.tx - ST.x) * .35; }
     if (ST.finished) ST.tx = lerp(ST.tx, 0, dt * 2);
     var rate = 3.6 * dt * (.5 + .5 * clamp(sp, 0, 1));
     var before = ST.x; ST.x += clamp(ST.tx - ST.x, -rate, rate); ST.x -= dt * 2 * sp * sp * seg.curve * .32; ST.x = clamp(ST.x, -1.6, 1.6);
