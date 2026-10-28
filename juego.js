@@ -938,7 +938,33 @@
   if (iosHint && !standalone && /iphone|ipad|ipod/i.test(navigator.userAgent)) iosHint.hidden = false;
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
 
+  /* retrato de Jeeves de frente, cargado (para la intro y el ícono) */
+  function portrait(w) {
+    var tex = jeevesFrontTex(MINT), k = w / 200;
+    return mk(w, Math.round(420 * k), function (c) {
+      c.scale(k, k); c.drawImage(tex, 0, 0);
+      drawBurger(c, 72, 132, 46); drawBurger(c, 128, 132, 46);
+      drawDrink(c, 62, 226, 24); drawDrink(c, 100, 226, 24); drawDrink(c, 138, 226, 24); drawFries(c, 100, 310, 36);
+      c.fillStyle = MINT; c.strokeStyle = MINT; c.lineCap = 'round'; c.shadowColor = MINT; c.shadowBlur = 10; c.lineWidth = 7;
+      [76, 124].forEach(function (x) { c.beginPath(); c.arc(x, 44, 10, Math.PI * 1.15, Math.PI * 1.85); c.stroke(); });
+    });
+  }
+
+  /* intro al abrir: sigue desde la pantalla de arranque del celular */
+  (function intro() {
+    var el = $('#intro'); if (!el) return;
+    var seen = false; try { seen = sessionStorage.getItem('jx-intro') === '1'; } catch (e) {}
+    if (seen || reduce) { el.remove(); return; }
+    try { sessionStorage.setItem('jx-intro', '1'); } catch (e) {}
+    var img = el.querySelector('.in-bot'); try { img.src = portrait(240).toDataURL('image/png'); } catch (e) {}
+    el.classList.add('go');
+    var gone = false;
+    function close() { if (gone) return; gone = true; el.classList.add('out'); setTimeout(function () { el.remove(); }, 650); }
+    el.addEventListener('pointerdown', close);
+    setTimeout(close, 3300);
+  })();
+
   build(); resetRace(true); resize(); paintRecords($('#recStart'));
-  window.__jx = { T: T, st: ST, segs: function () { return segs.length; }, finishNow: function () { ST.pos = FINISH - PZ - 600; ST.x = 0; ST.tx = 0; }, rivals: function () { return rivals; }, FINISH: FINISH, startRace: startRace, resto: function () { return R; }, deliver: function (k) { deliver(k); }, goTo: function (i) { goTo(R.tables[i]); } };
+  window.__jx = { T: T, st: ST, segs: function () { return segs.length; }, finishNow: function () { ST.pos = FINISH - PZ - 600; ST.x = 0; ST.tx = 0; }, rivals: function () { return rivals; }, FINISH: FINISH, startRace: startRace, portrait: portrait, resto: function () { return R; }, deliver: function (k) { deliver(k); }, goTo: function (i) { goTo(R.tables[i]); } };
   requestAnimationFrame(function (ts) { last = ts; loop(ts); });
 })();

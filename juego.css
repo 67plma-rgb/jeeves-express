@@ -121,3 +121,35 @@ svg{display:block}
 .joy .knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#7FF5E2,var(--mint) 60%,#2FC9AF);box-shadow:0 8px 18px -4px rgba(69,237,209,.6),inset 0 -4px 8px rgba(0,0,0,.15);transition:transform .25s var(--ease)}
 .joy.on .knob{transition:none}
 .joy.on{border-color:rgba(69,237,209,.55)}
+
+/* Intro al abrir */
+#intro{position:absolute;inset:0;z-index:20;background:#0B1230;overflow:hidden;display:none}
+#intro.go{display:block}
+#intro.out{animation:inOut .6s cubic-bezier(.7,0,.84,0) forwards}
+@keyframes inOut{to{opacity:0;transform:scale(1.08)}}
+.in-glow{position:absolute;left:50%;top:44%;width:140vmax;height:140vmax;margin:-70vmax 0 0 -70vmax;border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,.35),rgba(11,18,48,0) 45%);opacity:0;animation:inFade 1.2s .4s ease forwards}
+.in-icon{position:absolute;left:50%;top:50%;width:min(64%,330px);aspect-ratio:1;transform:translate(-50%,-50%);animation:inIcon .8s .15s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes inIcon{40%{transform:translate(-50%,-50%) scale(.94)}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0;filter:blur(6px)}}
+.in-ring{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid var(--mint);opacity:0;animation:inRing .9s .5s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes inRing{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(5)}}
+.in-lines i{position:absolute;left:50%;top:46%;width:2px;height:22vh;margin-left:-1px;transform-origin:50% 0;background:linear-gradient(rgba(69,237,209,0),rgba(69,237,209,.7));opacity:0;border-radius:2px}
+.in-lines i:nth-child(1){--r:0deg}.in-lines i:nth-child(2){--r:30deg}.in-lines i:nth-child(3){--r:60deg}.in-lines i:nth-child(4){--r:90deg}.in-lines i:nth-child(5){--r:120deg}.in-lines i:nth-child(6){--r:150deg}.in-lines i:nth-child(7){--r:180deg}.in-lines i:nth-child(8){--r:210deg}.in-lines i:nth-child(9){--r:240deg}.in-lines i:nth-child(10){--r:270deg}.in-lines i:nth-child(11){--r:300deg}.in-lines i:nth-child(12){--r:330deg}
+.in-lines i{animation:inLine .9s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:calc(.55s + var(--d,0s))}
+.in-lines i:nth-child(odd){--d:.08s;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.55))}
+@keyframes inLine{0%{opacity:0;transform:rotate(var(--r)) translateY(10vh) scaleY(.2)}30%{opacity:1}100%{opacity:0;transform:rotate(var(--r)) translateY(60vh) scaleY(1.2)}}
+.in-road{position:absolute;left:50%;top:58%;bottom:0;width:120vw;transform:translateX(-50%);clip-path:polygon(46% 0,54% 0,100% 100%,0 100%);background:linear-gradient(#1A2350,#121A3D);opacity:0;animation:inFade .6s .75s ease forwards}
+.in-road b{position:absolute;left:50%;top:0;bottom:0;width:6px;margin-left:-3px;background:repeating-linear-gradient(var(--mint) 0 26px,transparent 26px 50px);transform-origin:50% 0;transform:scaleY(0);animation:inDash .9s .8s cubic-bezier(.16,1,.3,1) forwards,inRun .5s 1.7s linear infinite}
+@keyframes inDash{to{transform:scaleY(1)}}
+@keyframes inRun{from{background-position:0 0}to{background-position:0 50px}}
+.in-bot{position:absolute;left:50%;top:58%;height:min(34vh,300px);transform:translate(-50%,-100%) translateY(60vh) scale(.7);opacity:0;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55));animation:inBot 1.1s .85s cubic-bezier(.2,1.25,.4,1) forwards}
+@keyframes inBot{0%{opacity:1}100%{opacity:1;transform:translate(-50%,-100%) translateY(0) scale(1)}}
+.in-text{position:absolute;left:0;right:0;top:calc(58% + 28px);text-align:center;padding:0 16px}
+.in-title{margin:0;text-shadow:0 4px 30px rgba(11,18,48,.9);font:700 clamp(40px,12vw,64px)/1 var(--f-display);letter-spacing:-.045em;white-space:nowrap;position:relative;display:inline-block;overflow:hidden;padding:0 .05em .08em}
+.in-title span{display:inline-block;opacity:0;transform:translateY(.7em) rotate(8deg);animation:inLetter .7s cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(1.35s + var(--i) * 45ms)}
+.in-title .sp{width:.26em}
+.in-title::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-18deg);mix-blend-mode:overlay;opacity:0;animation:inShine .8s 2.3s ease-out forwards}
+@keyframes inShine{0%{opacity:1;left:-40%}100%{opacity:1;left:120%}}
+@keyframes inLetter{to{opacity:1;transform:none}}
+.in-text p{margin:10px 0 0;font:600 13px/1 var(--f-text);letter-spacing:.18em;text-transform:uppercase;color:var(--mint);opacity:0;animation:inFade .8s 2s ease forwards}
+@keyframes inFade{to{opacity:1}}
+.in-title span:nth-child(1){--i:1}.in-title span:nth-child(2){--i:2}.in-title span:nth-child(3){--i:3}.in-title span:nth-child(4){--i:4}.in-title span:nth-child(5){--i:5}.in-title span:nth-child(6){--i:6}.in-title span:nth-child(7){--i:7}.in-title span:nth-child(8){--i:8}.in-title span:nth-child(9){--i:9}.in-title span:nth-child(10){--i:10}.in-title span:nth-child(11){--i:11}.in-title span:nth-child(12){--i:12}.in-title span:nth-child(13){--i:13}.in-title span:nth-child(14){--i:14}
